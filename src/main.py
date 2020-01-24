@@ -22,7 +22,6 @@ def main():
     print("Welcome to Sinabs!")
 
     # Read the number of people splitting the bill.
-    n_people = 0
     while True:
         raw_string = input("How many people want to split the bill?\n")
         try:
@@ -36,8 +35,42 @@ def main():
     inv_name_dict = {v: k for k, v in name_dict.items()}
 
     print("The initial balance after all spendings are:")
-    for name in start_accounts.keys():
-        print(name + ": " + str(start_accounts[name]))
+    for name in name_dict.keys():
+        print(name + ": " + str(start_accounts[name_dict[name]]))
+
+    payment_matrix = generate_payments(start_accounts)
+
+    for i, row in enumerate(payment_matrix):
+        for j, payment in enumerate(row):
+            if payment > 0.01:
+                print(inv_name_dict[j] + " has to pay " + str(round(payment, 2)) + " to " + inv_name_dict[i])
+
+
+def generate_payments(accounts):
+    high_spender = None
+    low_spender = None
+    payment_matrix = [[0.0 for i in range(len(accounts))] for j in range(len(accounts))]
+    while high_spender != low_spender or high_spender is None:
+        high_spender = accounts.index(max(accounts))
+        low_spender = accounts.index(min(accounts))
+
+        average_account = sum(accounts) / float(len(accounts))
+        max_account = accounts[high_spender]
+        min_account = accounts[low_spender]
+
+        if abs(max_account - average_account) < 0.01 or abs(average_account - min_account) < 0.01:
+            break
+
+        p_max_to_min = min([max_account - average_account, average_account - min_account])
+        p_min_to_max = -p_max_to_min
+
+        payment_matrix[high_spender][low_spender] = p_max_to_min
+        payment_matrix[low_spender][high_spender] = p_min_to_max
+
+        accounts[high_spender] -= p_max_to_min
+        accounts[low_spender] -= p_min_to_max
+
+    return payment_matrix
 
 
 def get_start_accounts(n):
