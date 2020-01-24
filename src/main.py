@@ -32,7 +32,8 @@ def main():
             print("ValueError: " + raw_string + " is not a number.")
             print("Please enter a valid number.")
 
-    start_accounts = get_start_accounts(n_people)
+    name_dict, start_accounts = get_start_accounts(n_people)
+    inv_name_dict = {v: k for k, v in name_dict.items()}
 
     print("The initial balance after all spendings are:")
     for name in start_accounts.keys():
@@ -40,16 +41,18 @@ def main():
 
 
 def get_start_accounts(n):
-    start_accounts = {}
+    start_accounts = [0.0 for i in range(n)]
+    name_dict = {}
     for i in range(n):
         new_name = input("Please enter the name of person " + str(i + 1) + ".\n")
-        start_accounts[new_name] = 0.0
+        name_dict[new_name] = i
+        start_accounts[i] = 0.0
         new_spending = 0.0
 
         raw_string = input("Please enter " + new_name + "'s first spending (0 to quit).\n")
         try:
             new_spending = float(raw_string)
-            start_accounts[new_name] += new_spending
+            start_accounts[i] += new_spending
         except ValueError:
             print("ValueError: " + raw_string + " is not a number.")
             print("Please enter a valid number.")
@@ -58,12 +61,12 @@ def get_start_accounts(n):
             raw_string = input("Please enter " + new_name + "'s next spending.\n")
             try:
                 new_spending = float(raw_string)
-                start_accounts[new_name] += new_spending
+                start_accounts[i] += new_spending
             except ValueError:
                 print("ValueError: " + raw_string + " is not a number.")
                 print("Please enter a valid number.")
 
-    return start_accounts
+    return name_dict, start_accounts
 
 
 if __name__ == '__main__':
